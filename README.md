@@ -8,8 +8,9 @@ erb-sqlite-example
 
 ```bash
 git clone https://github.com/amilajack/erb-sqlite-example.git
-cd erb-sqlite-example
-yarn
+cd erb-sqlite-example && yarn
+cd app && yarn
+cd ..
 yarn dev
 ```
 
