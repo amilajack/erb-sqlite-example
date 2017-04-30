@@ -1,6 +1,8 @@
 erb-sqlite-example
 ==================
 
+[![Build Status](https://travis-ci.org/amilajack/erb-sqlite-example.svg?branch=master&maxAge=2592)](https://travis-ci.org/amilajack/erb-sqlite-example)
+
 **An example of erb with native dependencies (sqlite3 in this case)**
 
 ## Setup
