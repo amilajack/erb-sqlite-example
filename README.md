@@ -22,8 +22,8 @@ Some native dependencies have issues with how webpack bundles code. One solution
 You **must** install the dependencies as `dependencies` **and not** `devDepencencies`. Make sure to install like so for npm: `npm install --save my-cool-depencency` and like so for yarn: `yarn add my-cool-depencency -S`.
 
 ## Notes
-**The changes that were made were installing sqlite to `./app/package.json`:**
+**These changes that were made to ERB:**
 ```bash
 cd app
-yarn add sqlite -S
+yarn add sqlite
 ```
