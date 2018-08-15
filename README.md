@@ -1,7 +1,7 @@
 erb-sqlite-example
 ==================
 
-[![Build Status](https://travis-ci.org/amilajack/erb-sqlite-example.svg?branch=master&maxAge=2592)](https://travis-ci.org/amilajack/erb-sqlite-example)
+[![Build Status](https://travis-ci.org/amilajack/erb-sqlite-example.svg?branch=master&maxAge=2592)](https://travis-ci.org/amilajack/erb-sqlite-example) [![Greenkeeper badge](https://badges.greenkeeper.io/amilajack/erb-sqlite-example.svg)](https://greenkeeper.io/)
 
 **An example of erb with native dependencies (sqlite3 in this case)**
 
