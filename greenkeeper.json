@@ -1,0 +1,11 @@
+{
+  "groups": {
+    "default": {
+      "packages": [
+        "app/.package.json.un~",
+        "app/package.json",
+        "package.json"
+      ]
+    }
+  }
+}
