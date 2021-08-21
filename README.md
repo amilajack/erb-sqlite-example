@@ -15,7 +15,7 @@ npm start
 
 ## How it works
 
-`sqlite3` is a native dependency that needs to be compiled before it is used (therefore it is consiered 'native dependency'). `sqlite3` and any other depencencies in `./build//app/package.json` are imported as an [externals](https://webpack.js.org/configuration/externals/), which means that webpack doesn't process them. The dependency will be imported with normal `require()` calls.
+`sqlite3` is a native dependency that needs to be compiled before it is used (therefore it is consiered 'native dependency'). `sqlite3` and any other depencencies in `./build/app/package.json` are imported as an [externals](https://webpack.js.org/configuration/externals/), which means that webpack doesn't process them. The dependency will be imported with normal `require()` calls.
 
 Some native dependencies have issues with how webpack bundles code. One solution to these kinds of issues is to add those native dependencies to your `./build/app/package.json`. These dependencies are automatically rebuilt against electron's node version after installing (see the postinstall script in `./build/app/package.json`). [electron-builder](https://github.com/electron-userland/electron-builder) will also rebuild dependencies just before packaging your app.
 
