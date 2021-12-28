@@ -1,6 +1,6 @@
 # erb-sqlite-example
 
-[![Build Status](https://travis-ci.org/amilajack/erb-sqlite-example.svg?branch=master&maxAge=2592)](https://travis-ci.org/amilajack/erb-sqlite-example)
+[![Test](https://github.com/amilajack/erb-sqlite-example/actions/workflows/test.yml/badge.svg)](https://github.com/amilajack/erb-sqlite-example/actions/workflows/test.yml)
 
 **An example of erb with native dependencies (sqlite3 in this case)**
 
