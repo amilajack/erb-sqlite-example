@@ -1,0 +1,39 @@
+tr td {
+  padding: 4px 4px !important;
+}
+
+.ant-upload-list-text {
+  width: 170px;
+}
+
+.ant-layout-sider.ant-layout-sider-dark.ant-layout-sider-collapsed {
+  flex: 0 0 50px !important;
+  max-width: none !important;
+  min-width: 0px !important;
+}
+
+.ant-layout-content {
+  padding: 10px !important;
+}
+
+.site-layout {
+  height: 100%;
+}
+
+input.validateErrorField:hover {
+  border-color: #ff4d4f;
+}
+
+input.validateErrorField:focus {
+  border-color: #ff4d4f;
+  box-shadow: 0 0 0 2px rgba(251, 31, 71, 0.2)
+}
+
+.validateErrorField {
+  border-color: #ff4d4f;
+}
+
+.validateErrorMessage {
+  margin-top: 10px;
+  color: #ff4d4f;
+}
