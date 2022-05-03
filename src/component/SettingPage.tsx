@@ -97,13 +97,12 @@ const categoryData: CategoryType[] = [
 
 const settingSchema = Yup.object().shape({
   categoryName: Yup.string()
-      .max(50, 'Danh mục chỉ có nhiều nhất 50 kí tự')
-      .required('Vui lòng nhập tên danh mục'),
+    .max(50, 'Danh mục chỉ có nhiều nhất 50 kí tự')
+    .required('Vui lòng nhập tên danh mục'),
 });
 
 const SettingPage = () => {
-
-  const { list } = useSelector((state) =>  _.get(state, 'todos', []));
+  const { list } = useSelector((state) => _.get(state, 'todos', []));
   console.log('list', list);
 
   const children = [];
@@ -112,25 +111,15 @@ const SettingPage = () => {
   }
   const [isModalVisible, setModalVisible] = useState(false);
 
-  const categoryColumns = [
-    {
-      title: 'Stt',
-      width: '5%',
-    },
-    {
-      title: 'Tên',
-      dataIndex: 'name',
-      width: '85%',
-    },
-    {
-      title: 'Action',
-      width: '10%',
-      dataIndex: 'id',
-      render: (id: number) => {
-        return <div style={{ textAlign: 'center' }}><a><EditOutlined onClick={() => editCategory(id)}/></a></div>
-      }
-    },
-  ];
+  const initialValues = {
+    categoryName: '',
+  };
+
+  const formik = useFormik({
+    initialValues,
+    validationSchema: settingSchema,
+    onSubmit: () => {},
+  });
 
   const editCategory = (id: number) => {
     console.log(id);
@@ -154,23 +143,40 @@ const SettingPage = () => {
     setModalVisible(false);
   };
 
-  const initialValues = {
-    categoryName: '',
-  }
-
-  const formik = useFormik({
-    initialValues,
-    validationSchema: settingSchema,
-    onSubmit: () => {},
-  });
-
   const fetchCategory = async () => {
     // dispatch(getTodos());
   };
-  let dispatch = useDispatch();
+  const dispatch = useDispatch();
+
   useEffect(() => {
     dispatch(getTodos());
-  }, []);
+  });
+
+  const categoryColumns = [
+    {
+      title: 'Stt',
+      width: '5%',
+    },
+    {
+      title: 'Tên',
+      dataIndex: 'name',
+      width: '85%',
+    },
+    {
+      title: 'Action',
+      width: '10%',
+      dataIndex: 'id',
+      render: (id: number) => {
+        return (
+          <div style={{ textAlign: 'center' }}>
+            <a>
+              <EditOutlined onClick={() => editCategory(id)} />
+            </a>
+          </div>
+        );
+      },
+    },
+  ];
 
   return (
     <>

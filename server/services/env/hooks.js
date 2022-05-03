@@ -1,7 +1,7 @@
-const { SERVICE } = require('@forrestjs/hooks')
+const { SERVICE } = require('@forrestjs/hooks');
 
-const SERVICE_NAME = `${SERVICE} env`
+const SERVICE_NAME = `${SERVICE} env`;
 
 module.exports = {
-    SERVICE_NAME,
-}
+  SERVICE_NAME,
+};

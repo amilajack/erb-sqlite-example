@@ -25,19 +25,19 @@ contextBridge.exposeInMainWorld('electron', {
 // Export the apis per feature here:
 contextBridge.exposeInMainWorld('api_todos', {
   async getTodos() {
-      const result = await ipcRenderer.invoke('get-todos')
-      return result
+    const result = await ipcRenderer.invoke('get-todos');
+    return result;
   },
   async addTodo(description) {
-      await ipcRenderer.invoke('add-todo', description)
+    await ipcRenderer.invoke('add-todo', description);
   },
   async updateTodo(args) {
-      await ipcRenderer.invoke('update-todo', args)
+    await ipcRenderer.invoke('update-todo', args);
   },
   async deleteTodo(todoId) {
-      await ipcRenderer.invoke('delete-todo', todoId)
+    await ipcRenderer.invoke('delete-todo', todoId);
   },
   async deleteTodos() {
-      await ipcRenderer.invoke('delete-todos')
-  }
+    await ipcRenderer.invoke('delete-todos');
+  },
 });
