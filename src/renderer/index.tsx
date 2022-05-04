@@ -1,4 +1,4 @@
-import { reducers } from 'features/feature-todo';
+import { reducers } from 'features';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { applyMiddleware, combineReducers, createStore } from 'redux';

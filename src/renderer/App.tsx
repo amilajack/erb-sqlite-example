@@ -10,8 +10,8 @@ import {
 } from '@ant-design/icons';
 import './App.css';
 import React from 'react';
-import ChangePage from 'component/ChangePage';
-import SettingPage from 'component/SettingPage';
+import ChangePage from 'page/ChangePage';
+import SettingPage from 'page/SettingPage';
 
 const { Sider, Content } = Layout;
 

@@ -14,6 +14,8 @@ runHookApp({
     ],
     features: [
         require('./features/feature-todo/index'),
+        require('./features/feature-category/index'),
+        require('./features/feature-account/index'),
     ],
     settings: async ({ setConfig, getEnv }) => {
         setConfig('ipcMain.routes', [{

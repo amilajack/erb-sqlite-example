@@ -37,3 +37,8 @@ input.validateErrorField:focus {
   margin-top: 10px;
   color: #ff4d4f;
 }
+
+.ant-checkbox-group-item {
+  /* display: block;
+  margin-right: 0; */
+}

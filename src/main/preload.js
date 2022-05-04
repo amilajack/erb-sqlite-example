@@ -41,3 +41,26 @@ contextBridge.exposeInMainWorld('api_todos', {
     await ipcRenderer.invoke('delete-todos');
   },
 });
+
+contextBridge.exposeInMainWorld('api_categories', {
+  async getCategories() {
+    const result = await ipcRenderer.invoke('get-categories');
+    return result;
+  },
+  async addCategory(name) {
+    await ipcRenderer.invoke('add-category', name);
+  },
+  async updateCategory(args) {
+    await ipcRenderer.invoke('update-category', args);
+  },
+});
+
+contextBridge.exposeInMainWorld('api_accounts', {
+  async getAccounts() {
+    const result = await ipcRenderer.invoke('get-accounts');
+    return result;
+  },
+  async addAccounts(accounts) {
+    await ipcRenderer.invoke('add-accounts', accounts);
+  },
+});
