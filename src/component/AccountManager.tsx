@@ -1,12 +1,15 @@
-import { Button, Col, Divider, Row, Select, Table, Upload } from "antd";
+import { Button, Col, Divider, Row, Select, Table, Upload } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-import { useEffect, useState } from "react";
-import Papa from "papaparse";
-import { useDispatch, useSelector } from "react-redux";
-import _ from "lodash";
-import { addAccounts, getAccounts } from "features/feature-account/services/account.service";
-import { getCategories } from "features/feature-category/services/category.service";
-import { useFormik } from "formik";
+import { useEffect, useState } from 'react';
+import Papa from 'papaparse';
+import { useDispatch, useSelector } from 'react-redux';
+import _ from 'lodash';
+import {
+  addAccounts,
+  getAccounts,
+} from 'features/feature-account/services/account.service';
+import { getCategories } from 'features/feature-category/services/category.service';
+import { useFormik } from 'formik';
 
 const { Option } = Select;
 
@@ -74,7 +77,7 @@ interface AccountType {
   groupCount: number;
   device: string;
   completedAt: string;
-};
+}
 
 // const accountData: AccountType[] = [
 //   {
@@ -111,20 +114,26 @@ const readAccountCsv = (pathFile: string) => {
     Papa.parse(pathFile, {
       header: true,
       skipEmptyLines: true,
-      error: function(error: Error) {
+      error(error: Error) {
         reject(error);
       },
-      complete: function (results) {
+      complete(results) {
         resolve(results.data);
       },
-    })
+    });
   });
 };
 
 const AccountManager = () => {
-  const { listCategory } = useSelector((state) => _.get(state, 'categories', []));
-  const categories = listCategory.map((c: {categoryId: number, name: string}) => <Option key={c.categoryId}>{c.name}</Option>);
-  categories.unshift(<Option key=''> </Option>);
+  const { listCategory } = useSelector((state) =>
+    _.get(state, 'categories', [])
+  );
+  const categories = listCategory.map(
+    (c: { categoryId: number; name: string }) => (
+      <Option key={c.categoryId}>{c.name}</Option>
+    )
+  );
+  categories.unshift(<Option key=""> </Option>);
 
   const { listAccount } = useSelector((state) => _.get(state, 'accounts', []));
 
@@ -133,6 +142,18 @@ const AccountManager = () => {
   const [categoryImportSelected, setCategoryImportSelected] = useState('');
 
   const dispatch = useDispatch();
+
+  const executeReadCsvFile = async (pathFile: string) => {
+    const accounts = await readAccountCsv(pathFile);
+    // @ts-ignore
+    const accountsAdded = accounts.map((ac: AccountType) => {
+      return { ...ac, ...{ categoryId: categoryImportSelected } };
+    });
+    dispatch(addAccounts(accountsAdded));
+    setImporting(false);
+    setFileList([]);
+    setCategoryImportSelected('');
+  };
 
   const handleImport = () => {
     setImporting(true);
@@ -165,19 +186,11 @@ const AccountManager = () => {
   const uploadComponent = (
     // eslint-disable-next-line react/jsx-props-no-spreading
     <Upload {...props}>
-      <Button disabled={fileList.length === 1} icon={<UploadOutlined />}>Select File</Button>
+      <Button disabled={fileList.length === 1} icon={<UploadOutlined />}>
+        Select File
+      </Button>
     </Upload>
   );
-
-  const executeReadCsvFile = async (pathFile: string) => {
-    const accounts = await readAccountCsv(pathFile);
-    // @ts-ignore
-    const accountsAdded = accounts.map((ac: AccountType) => {return {...ac, ...{categoryId: categoryImportSelected}}});
-    dispatch(addAccounts(accountsAdded));
-    setImporting(false);
-    setFileList([]);
-    setCategoryImportSelected('');
-  }
 
   const initialValues = {
     categoryImported: '',
@@ -208,7 +221,12 @@ const AccountManager = () => {
         }}
       >
         <Col span={12}>
-          <Select mode="tags" style={{ width: '30%' }} placeholder="Tất cả danh mục" onChange={(value) => setCategoryImportSelected(value)}>
+          <Select
+            mode="tags"
+            style={{ width: '30%' }}
+            placeholder="Tất cả danh mục"
+            onChange={(value) => setCategoryImportSelected(value)}
+          >
             {categories}
           </Select>
         </Col>
@@ -220,7 +238,12 @@ const AccountManager = () => {
             }}
           >
             {uploadComponent}
-            <Select defaultValue="" value={categoryImportSelected} onChange={(value) => setCategoryImportSelected(value)} style={{ width: 250, height: '35px' }}>
+            <Select
+              defaultValue=""
+              value={categoryImportSelected}
+              onChange={(value) => setCategoryImportSelected(value)}
+              style={{ width: 250, height: '35px' }}
+            >
               {categories}
             </Select>
             <Button
@@ -247,6 +270,6 @@ const AccountManager = () => {
       />
     </>
   );
-}
+};
 
 export default AccountManager;

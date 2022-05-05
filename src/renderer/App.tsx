@@ -12,6 +12,11 @@ import './App.css';
 import React from 'react';
 import ChangePage from 'page/ChangePage';
 import SettingPage from 'page/SettingPage';
+import { useSelector } from 'react-redux';
+import CommonFunc from 'common/common';
+import _ from 'lodash';
+import Loading from 'component/Loading';
+import { accountActions } from 'features/feature-account/reducers/account.reducer';
 
 const { Sider, Content } = Layout;
 
@@ -59,8 +64,13 @@ const MainPage = () => {
     default:
       break;
   }
+  const isLoading = useSelector((state) =>
+    CommonFunc.isLoading(state, accountActions)
+  );
+  console.log('isLoading', isLoading);
   return (
     <Layout>
+      <Loading isLoading={isLoading} />
       <Sider
         collapsed
         style={{

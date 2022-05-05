@@ -1,8 +1,7 @@
-import { Table, Row, Col, Divider, Button, Upload, Select, Checkbox } from 'antd';
+import { Table, Row, Col, Divider, Button } from 'antd';
 import '../../assets/css/style.css';
-import { useState } from 'react';
 import AccountManager from 'component/AccountManager';
-import { Loading } from 'component/Loading';
+import _ from 'lodash';
 
 const deviceColumns = [
   {
@@ -87,7 +86,6 @@ const deviceRowSelection = {
 const ChangePage = () => {
   return (
     <>
-      {/* <Loading isLoading={isLoading} /> */}
       <div
         style={{
           height: '700px',
@@ -95,7 +93,7 @@ const ChangePage = () => {
           backgroundColor: 'white',
         }}
       >
-        <AccountManager/>
+        <AccountManager />
       </div>
       <div
         style={{

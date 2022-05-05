@@ -1,5 +1,9 @@
-export const CommonFunc = {
+const CommonFunc = {
   isLoading: (state: any, actions: any) => {
-    return !!Object.keys(actions).find(key => state[`isLoading_${actions[key]}`] === true);
-  }
-}
+    return !!Object.keys(actions).find(
+      (key) => state[`isLoading_${actions[key]}`] === true
+    );
+  },
+};
+
+export default CommonFunc;

@@ -1,4 +1,4 @@
-import { Table, Row, Col, Divider, Button, Upload, Select, Checkbox } from 'antd';
+import { Table, Row, Col, Divider, Button, Upload, Select } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import '../../assets/css/style.css';
 import { useState } from 'react';
@@ -224,8 +224,11 @@ const ChangePage = () => {
   );
 
   const children = [];
+  // eslint-disable-next-line no-plusplus
   for (let i = 10; i < 36; i++) {
-    children.push(<Option key={i.toString(36) + i}>{i.toString(36) + i}</Option>);
+    children.push(
+      <Option key={i.toString(36) + i}>{i.toString(36) + i}</Option>
+    );
   }
   return (
     <>
@@ -249,7 +252,12 @@ const ChangePage = () => {
           }}
         >
           <Col span={12}>
-            <Select mode="tags" style={{ width: '30%' }} placeholder="Tất cả danh mục" onChange={(value) => console.log(`selected ${value}`)}>
+            <Select
+              mode="tags"
+              style={{ width: '30%' }}
+              placeholder="Tất cả danh mục"
+              onChange={(value) => console.log(`selected ${value}`)}
+            >
               {children}
             </Select>
           </Col>
@@ -261,7 +269,11 @@ const ChangePage = () => {
               }}
             >
               {uploadComponent}
-              <Select defaultValue="a1" onChange={(value) => console.log(`selected ${value}`)} style={{ width: 200 }}>
+              <Select
+                defaultValue="a1"
+                onChange={(value) => console.log(`selected ${value}`)}
+                style={{ width: 200 }}
+              >
                 {children}
               </Select>
               <Button

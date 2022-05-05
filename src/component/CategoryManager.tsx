@@ -3,15 +3,19 @@ import { useFormik } from 'formik';
 import { EditOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCategories, addCategory, updateCategory } from 'features/feature-category/services/category.service';
+import {
+  getCategories,
+  addCategory,
+  updateCategory,
+} from 'features/feature-category/services/category.service';
 import * as Yup from 'yup';
 import { Button, Input, Modal, Table } from 'antd';
 
 interface CategoryType {
   key: React.Key;
-  id: number,
+  id: number;
   name: string;
-};
+}
 
 const settingSchema = Yup.object().shape({
   categoryName: Yup.string()
@@ -20,38 +24,12 @@ const settingSchema = Yup.object().shape({
 });
 
 const CategoryManager = () => {
-  const categoryColumns = [
-    {
-      title: 'Stt',
-      width: '5%',
-      render: (text: string, record: CategoryType, index: number) => {
-        return index + 1;
-      }
-    },
-    {
-      title: 'Tên',
-      dataIndex: 'name',
-      width: '85%',
-    },
-    {
-      title: 'Action',
-      width: '10%',
-      dataIndex: 'categoryId',
-      render: (categoryId: number) => {
-        return (
-          <div style={{ textAlign: 'center' }}>
-            <a>
-              <EditOutlined onClick={() => onEditCategory(categoryId)} />
-            </a>
-          </div>
-        );
-      },
-    },
-  ];
-
-  const { listCategory } = useSelector((state) => _.get(state, 'categories', []));
+  const { listCategory } = useSelector((state) =>
+    _.get(state, 'categories', [])
+  );
   const [isModalVisible, setModalVisible] = useState(false);
   const [isEditedId, setEditedId] = useState(0);
+  const dispatch = useDispatch();
 
   const initialValues = {
     categoryName: '',
@@ -65,7 +43,13 @@ const CategoryManager = () => {
 
   const onEditCategory = (id: number) => {
     setEditedId(id);
-    formik.setFieldValue("categoryName", _.get(_.find(listCategory, (c) => c.categoryId === id), 'name'));
+    formik.setFieldValue(
+      'categoryName',
+      _.get(
+        _.find(listCategory, (c) => c.categoryId === id),
+        'name'
+      )
+    );
     setModalVisible(true);
   };
 
@@ -88,11 +72,38 @@ const CategoryManager = () => {
   };
 
   const handleModalCancel = () => {
-    formik.resetForm({values: {categoryName: ''}});
+    formik.resetForm({ values: { categoryName: '' } });
     setModalVisible(false);
   };
 
-  const dispatch = useDispatch();
+  const categoryColumns = [
+    {
+      title: 'Stt',
+      width: '5%',
+      render: (text: string, record: CategoryType, index: number) => {
+        return index + 1;
+      },
+    },
+    {
+      title: 'Tên',
+      dataIndex: 'name',
+      width: '85%',
+    },
+    {
+      title: 'Action',
+      width: '10%',
+      dataIndex: 'categoryId',
+      render: (categoryId: number) => {
+        return (
+          <div style={{ textAlign: 'center' }}>
+            <a>
+              <EditOutlined onClick={() => onEditCategory(categoryId)} />
+            </a>
+          </div>
+        );
+      },
+    },
+  ];
 
   useEffect(() => {
     dispatch(getCategories());
@@ -100,25 +111,40 @@ const CategoryManager = () => {
 
   return (
     <>
-      <Button type="primary" style={{marginBottom: '10px'}} onClick={() => onAddCategory()}>Thêm</Button>
+      <Button
+        type="primary"
+        style={{ marginBottom: '10px' }}
+        onClick={() => onAddCategory()}
+      >
+        Thêm
+      </Button>
       <Table
         columns={categoryColumns}
         dataSource={listCategory}
         pagination={false}
         rowKey="categoryId"
       />
-      <Modal title="Danh mục" visible={isModalVisible} onOk={handleModalOk} onCancel={handleModalCancel}>
+      <Modal
+        title="Danh mục"
+        visible={isModalVisible}
+        onOk={handleModalOk}
+        onCancel={handleModalCancel}
+      >
         <form>
           <Input
             placeholder="Tên danh mục"
             value={formik.values.categoryName}
             maxLength={50}
             onBlur={formik.handleBlur('categoryName')}
-            onChange={(e) => formik.setFieldValue('categoryName', e.target.value)}
+            onChange={(e) =>
+              formik.setFieldValue('categoryName', e.target.value)
+            }
             className={formik.errors.categoryName ? 'validateErrorField' : ''}
           />
           {formik.errors.categoryName && (
-            <span className='validateErrorMessage'>{formik.errors.categoryName}</span>
+            <span className="validateErrorMessage">
+              {formik.errors.categoryName}
+            </span>
           )}
         </form>
       </Modal>

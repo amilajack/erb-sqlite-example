@@ -97,20 +97,27 @@ const categoryData: CategoryType[] = [
 
 const settingSchema = Yup.object().shape({
   categoryName: Yup.string()
-      .max(50, 'Danh mục chỉ có nhiều nhất 50 kí tự')
-      .required('Vui lòng nhập tên danh mục'),
+    .max(50, 'Danh mục chỉ có nhiều nhất 50 kí tự')
+    .required('Vui lòng nhập tên danh mục'),
 });
 
 const SettingPage = () => {
-
-  const { list } = useSelector((state) =>  _.get(state, 'todos', []));
+  const { list } = useSelector((state) => _.get(state, 'todos', []));
   console.log('list', list);
 
   const children = [];
+  // eslint-disable-next-line no-plusplus
   for (let i = 10; i < 36; i++) {
-    children.push(<Option key={i.toString(36) + i}>{i.toString(36) + i}</Option>);
+    children.push(
+      <Option key={i.toString(36) + i}>{i.toString(36) + i}</Option>
+    );
   }
   const [isModalVisible, setModalVisible] = useState(false);
+
+  const editCategory = (id: number) => {
+    console.log(id);
+    setModalVisible(true);
+  };
 
   const categoryColumns = [
     {
@@ -127,19 +134,30 @@ const SettingPage = () => {
       width: '10%',
       dataIndex: 'id',
       render: (id: number) => {
-        return <div style={{ textAlign: 'center' }}><a><EditOutlined onClick={() => editCategory(id)}/></a></div>
-      }
+        return (
+          <div style={{ textAlign: 'center' }}>
+            <a>
+              <EditOutlined onClick={() => editCategory(id)} />
+            </a>
+          </div>
+        );
+      },
     },
   ];
-
-  const editCategory = (id: number) => {
-    console.log(id);
-    setModalVisible(true);
-  };
 
   const addCategory = () => {
     setModalVisible(true);
   };
+
+  const initialValues = {
+    categoryName: '',
+  };
+
+  const formik = useFormik({
+    initialValues,
+    validationSchema: settingSchema,
+    onSubmit: () => {},
+  });
 
   const handleModalOk = async () => {
     if (formik.errors.categoryName) {
@@ -150,24 +168,14 @@ const SettingPage = () => {
   };
 
   const handleModalCancel = () => {
-    formik.resetForm({values: {categoryName: ''}});
+    formik.resetForm({ values: { categoryName: '' } });
     setModalVisible(false);
   };
-
-  const initialValues = {
-    categoryName: '',
-  }
-
-  const formik = useFormik({
-    initialValues,
-    validationSchema: settingSchema,
-    onSubmit: () => {},
-  });
 
   const fetchCategory = async () => {
     // dispatch(getTodos());
   };
-  let dispatch = useDispatch();
+  const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getTodos());
   }, []);
@@ -180,12 +188,18 @@ const SettingPage = () => {
           backgroundColor: 'white',
         }}
       >
-        <Col span={12} style={{padding: '10px'}}>
+        <Col span={12} style={{ padding: '10px' }}>
           <Divider orientation="left" orientationMargin={20}>
             Thông tin Danh mục
           </Divider>
-          <div style={{height: '400px'}}>
-            <Button type="primary" style={{marginBottom: '10px'}} onClick={() => addCategory()}>Thêm</Button>
+          <div style={{ height: '400px' }}>
+            <Button
+              type="primary"
+              style={{ marginBottom: '10px' }}
+              onClick={() => addCategory()}
+            >
+              Thêm
+            </Button>
             <Table
               columns={categoryColumns}
               dataSource={categoryData}
@@ -193,7 +207,7 @@ const SettingPage = () => {
             />
           </div>
         </Col>
-        <Col span={12}></Col>
+        <Col span={12} />
       </Row>
       <Row
         style={{
@@ -206,21 +220,34 @@ const SettingPage = () => {
             Thông tin Danh mục
           </Divider>
         </Col>
-        <Col span={12}></Col>
+        <Col span={12} />
       </Row>
 
-      <Modal title="Danh mục" visible={isModalVisible} onOk={handleModalOk} onCancel={handleModalCancel}>
+      <Modal
+        title="Danh mục"
+        visible={isModalVisible}
+        onOk={handleModalOk}
+        onCancel={handleModalCancel}
+      >
         <form>
           <Input
             placeholder="Tên danh mục"
             value={formik.values.categoryName}
             maxLength={50}
             onBlur={formik.handleBlur('categoryName')}
-            onChange={(e) => formik.setFieldValue('categoryName', e.target.value)}
-            className={(formik.touched.categoryName && formik.errors.categoryName) ? 'validateErrorField' : ''}
+            onChange={(e) =>
+              formik.setFieldValue('categoryName', e.target.value)
+            }
+            className={
+              formik.touched.categoryName && formik.errors.categoryName
+                ? 'validateErrorField'
+                : ''
+            }
           />
           {formik.touched.categoryName && formik.errors.categoryName && (
-            <span className='validateErrorMessage'>{formik.errors.categoryName}</span>
+            <span className="validateErrorMessage">
+              {formik.errors.categoryName}
+            </span>
           )}
         </form>
       </Modal>

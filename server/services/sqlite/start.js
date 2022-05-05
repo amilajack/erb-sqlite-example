@@ -28,7 +28,7 @@ const initModels = async (conn, models) => {
   const promises = models.map(
     (model) =>
       // eslint-disable-next-line @typescript-eslint/no-shadow
-      new Promise(async(resolve, reject) => {
+      new Promise(async (resolve, reject) => {
         try {
           conn.logger(`[db:${conn.name}] init model ${model.name}`);
           const instance = await model.init(conn.handler);
@@ -49,7 +49,7 @@ const startModels = async (conn, models) => {
   const promises = models.map(
     (model) =>
       // eslint-disable-next-line @typescript-eslint/no-shadow
-      new Promise(async(resolve, reject) => {
+      new Promise(async (resolve, reject) => {
         if (!model.start) {
           return resolve();
         }
@@ -82,9 +82,9 @@ const start = async (settings) => {
   }
 
   try {
-    await establishConnection(conn, maxAttempts, attemptDelay)
+    await establishConnection(conn, maxAttempts, attemptDelay);
   } catch (err) {
-    throw new Error(`Error - Connection failed - [db:${name}] ${err.message}`)
+    throw new Error(`Error - Connection failed - [db:${name}] ${err.message}`);
   }
 
   try {
