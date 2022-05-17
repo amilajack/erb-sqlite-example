@@ -7,9 +7,9 @@ import _ from 'lodash';
 import {
   addAccounts,
   getAccounts,
+  searchAccounts,
 } from 'features/feature-account/services/account.service';
 import { getCategories } from 'features/feature-category/services/category.service';
-import { useFormik } from 'formik';
 
 const { Option } = Select;
 
@@ -192,15 +192,6 @@ const AccountManager = () => {
     </Upload>
   );
 
-  const initialValues = {
-    categoryImported: '',
-  };
-
-  const formik = useFormik({
-    initialValues,
-    onSubmit: () => {},
-  });
-
   useEffect(() => {
     dispatch(getCategories());
     dispatch(getAccounts());
@@ -225,7 +216,9 @@ const AccountManager = () => {
             mode="tags"
             style={{ width: '30%' }}
             placeholder="Tất cả danh mục"
-            onChange={(value) => setCategoryImportSelected(value)}
+            onChange={(values) =>
+              dispatch(searchAccounts({ categoryIds: values }))
+            }
           >
             {categories}
           </Select>
@@ -255,6 +248,7 @@ const AccountManager = () => {
             >
               {importing ? 'Importing...' : 'Start Import'}
             </Button>
+            {/* <Button icon={<FolderOpenOutlined />}>Open folder</Button> */}
           </Row>
         </Col>
       </Row>

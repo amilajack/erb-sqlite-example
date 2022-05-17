@@ -22,3 +22,4 @@ export const updateCategory = (categoryId, newVal) => async (dispatch) => {
   await api_categories.updateCategory({ categoryId, name: newVal });
   dispatch(getCategories());
 };
+

@@ -1,4 +1,13 @@
+const { exec } = require('child_process');
 const { contextBridge, ipcRenderer } = require('electron');
+const { resolve, basename } = require('path');
+const trash = require('trash');
+const fs = require('fs');
+const util = require('util');
+
+const execProm = util.promisify(exec);
+const readdir = util.promisify(fs.readdir);
+const stat = util.promisify(fs.stat);
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
@@ -64,3 +73,39 @@ contextBridge.exposeInMainWorld('api_accounts', {
     await ipcRenderer.invoke('add-accounts', accounts);
   },
 });
+
+contextBridge.exposeInMainWorld('ipc_function', {
+  async execCmd(cmd) {
+    const { stdout, stderr } = await execProm(cmd);
+    return { stdout, stderr };
+  },
+  existsSync(dir) {
+    return fs.existsSync(dir);
+  },
+  mkdirSync(dir) {
+    return fs.mkdirSync(dir, { recursive: true });
+  },
+  renameSync(oldPath, newPath) {
+    return fs.renameSync(oldPath, newPath);
+  },
+  resolvePath(dir, subdir) {
+    return resolve(dir, subdir);
+  },
+  statSync(filePath) {
+    return fs.statSync(filePath);
+  },
+  basename(filePath) {
+    return basename(filePath);
+  },
+  async readDir(dir) {
+    const fileDirs = await readdir(dir);
+    return fileDirs;
+  },
+  async statIsDirectory(res) {
+    return (await stat(res)).isDirectory();
+  },
+  async trash(path) {
+    await trash(path);
+  },
+});
+

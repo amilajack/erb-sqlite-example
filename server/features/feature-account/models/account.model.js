@@ -119,7 +119,7 @@ const handleDeleteAccount = (conn, Model) => async (accountId) => {
 // method: get all existing accounts
 const handleGetAccounts = (conn, Model) => async () => {
   // query:
-  const q = `SELECT account_id AS accountId, account_table.name, email, birthday, category_table.name AS category, friend_count AS friendCount, group_count AS groupCount
+  const q = `SELECT account_id AS accountId, account_table.name, email, birthday, account_table.category_id AS categoryId, category_table.name AS category, friend_count AS friendCount, group_count AS groupCount
     FROM account_table
     INNER JOIN category_table
     WHERE account_table.category_id = category_table.category_id`;

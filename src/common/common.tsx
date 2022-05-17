@@ -1,7 +1,7 @@
 const CommonFunc = {
   isLoading: (state: any, actions: any) => {
     return !!Object.keys(actions).find(
-      (key) => state[`isLoading_${actions[key]}`] === true
+      (key) => !!Object.keys(state).find(rd => state[rd][`isLoading_${actions[key]}`] === true)
     );
   },
 };

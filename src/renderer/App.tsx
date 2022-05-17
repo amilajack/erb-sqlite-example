@@ -16,7 +16,7 @@ import { useSelector } from 'react-redux';
 import CommonFunc from 'common/common';
 import _ from 'lodash';
 import Loading from 'component/Loading';
-import { accountActions } from 'features/feature-account/reducers/account.reducer';
+import { actions } from 'features';
 
 const { Sider, Content } = Layout;
 
@@ -65,39 +65,40 @@ const MainPage = () => {
       break;
   }
   const isLoading = useSelector((state) =>
-    CommonFunc.isLoading(state, accountActions)
+    CommonFunc.isLoading(state, actions)
   );
-  console.log('isLoading', isLoading);
   return (
-    <Layout>
+    <>
       <Loading isLoading={isLoading} />
-      <Sider
-        collapsed
-        style={{
-          backgroundColor: 'white',
-          marginTop: '0px',
-          marginBottom: '0px',
-        }}
-      >
-        <Menu
-          defaultSelectedKeys={[currentPage]}
-          mode="inline"
-          theme="light"
-          items={items}
-          onClick={onClick}
-        />
-      </Sider>
-      <Layout className="site-layout">
-        <Content
+      <Layout>
+        <Sider
+          collapsed
           style={{
-            padding: 24,
-            minHeight: 280,
+            backgroundColor: 'white',
+            marginTop: '0px',
+            marginBottom: '0px',
           }}
         >
-          {page}
-        </Content>
+          <Menu
+            defaultSelectedKeys={[currentPage]}
+            mode="inline"
+            theme="light"
+            items={items}
+            onClick={onClick}
+          />
+        </Sider>
+        <Layout className="site-layout">
+          <Content
+            style={{
+              padding: 24,
+              minHeight: 280,
+            }}
+          >
+            {page}
+          </Content>
+        </Layout>
       </Layout>
-    </Layout>
+    </>
   );
 };
 

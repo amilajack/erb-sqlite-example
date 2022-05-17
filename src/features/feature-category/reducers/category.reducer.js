@@ -5,11 +5,12 @@ export const initialState = {
 /**
  * Actions
  */
-
-export const SET_LIST = 'setList@categories';
+export const categoryActions = {
+  SET_LIST: 'setList@categories',
+};
 
 export const setList = (categories) => ({
-  type: SET_LIST,
+  type: categoryActions.SET_LIST,
   payload: { categories },
 });
 
@@ -17,7 +18,7 @@ export const setList = (categories) => ({
  * Handlers
  */
 export const actionHandlers = {
-  [SET_LIST]: (state, { payload }) => ({
+  [categoryActions.SET_LIST]: (state, { payload }) => ({
     ...state,
     listCategory: payload.categories,
   }),
