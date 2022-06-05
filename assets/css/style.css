@@ -68,3 +68,15 @@ input.validateErrorField:focus {
   background-color: rgb(5, 189, 5);
   border-color: rgb(5, 189, 5);
 }
+
+.label-setting {
+  font-weight: bold;
+}
+
+.row-per-setting {
+  margin-top: 10px;
+}
+
+.label-control {
+  margin: 0 5px 0 5px;
+}

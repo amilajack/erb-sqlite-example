@@ -1,23 +1,19 @@
 import _ from 'lodash';
 import '../../assets/css/style.css';
-import { Row, Col, Divider, Button } from 'antd';
-import { CaretRightOutlined } from '@ant-design/icons';
-import AccountManager from 'component/AccountManager';
+import { Row, Col } from 'antd';
 import DeviceManager from 'component/DeviceManager';
-import DeviceAction from 'functions/DeviceAction';
+import AccountList from 'component/settings_component/AccountList';
 
 const ChangePage = () => {
+  console.log('ChangePage');
   return (
     <>
       <div
         style={{
-          minHeight: '200px',
-          maxHeight: '500px',
-          overflow: 'auto',
           backgroundColor: 'white',
         }}
       >
-        <AccountManager />
+        <AccountList />
       </div>
       <div
         style={{
@@ -33,7 +29,7 @@ const ChangePage = () => {
             // justifyContent: 'end',
           }}
         >
-          <Col span={12}>
+          {/* <Col span={12}>
             <Divider orientation="left" orientationMargin={20}>
               Action
             </Divider>
@@ -57,9 +53,9 @@ const ChangePage = () => {
             >
               Backup Facebook
             </Button>
-          </Col>
+          </Col> */}
 
-          <Col span={12}>
+          <Col span={24}>
             <DeviceManager />
           </Col>
         </Row>

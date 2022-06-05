@@ -7,9 +7,10 @@ import {
   SettingOutlined,
   ProfileOutlined,
   KeyOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 import './App.css';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ChangePage from 'page/ChangePage';
 import SettingPage from 'page/SettingPage';
 import { useSelector } from 'react-redux';
@@ -17,6 +18,7 @@ import CommonFunc from 'common/common';
 import _ from 'lodash';
 import Loading from 'component/Loading';
 import { actions } from 'features';
+import AccountManager from 'component/AccountManager';
 
 const { Sider, Content } = Layout;
 
@@ -40,6 +42,7 @@ function getItem(
 
 const items: MenuItem[] = [
   getItem('Change', 'menu_change', <SyncOutlined />),
+  getItem('AccountManager', 'menu_account_manager', <UserOutlined />),
   getItem('Backup', 'menu_backup', <HistoryOutlined />),
   getItem('Restore', 'menu_restore', <ReloadOutlined />),
   getItem('Settings', 'menu_setting', <SettingOutlined />),
@@ -48,10 +51,15 @@ const items: MenuItem[] = [
 ];
 
 const MainPage = () => {
-  const [currentPage, setCurrentPage] = React.useState('menu_change');
+  const [currentPage, setCurrentPage] = useState('menu_change');
+  const [modalPage, setModalPage] = useState('');
   const onClick: MenuProps['onClick'] = (e) => {
     const { key } = e;
-    setCurrentPage(key);
+    if (key === 'menu_account_manager') {
+      setModalPage(key);
+    } else {
+      setCurrentPage(key);
+    }
   };
   let page: any;
   switch (currentPage) {
@@ -81,6 +89,7 @@ const MainPage = () => {
         >
           <Menu
             defaultSelectedKeys={[currentPage]}
+            selectedKeys={[currentPage]}
             mode="inline"
             theme="light"
             items={items}
@@ -95,6 +104,10 @@ const MainPage = () => {
             }}
           >
             {page}
+            <AccountManager
+              isShow={modalPage === 'menu_account_manager'}
+              setModalPage={setModalPage}
+            />
           </Content>
         </Layout>
       </Layout>

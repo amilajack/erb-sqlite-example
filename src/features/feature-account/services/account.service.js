@@ -22,13 +22,9 @@ export const addAccounts = (accounts) => async (dispatch) => {
   dispatch(setLoadingGetAccounts(false));
 };
 
-export const searchAccounts = (searchValues) => async (dispatch) => {
+export const searchAccounts = (searchQuery) => async (dispatch) => {
   dispatch(setLoadingGetAccounts(true));
-  let accounts = await api_accounts.getAccounts();
-  const categoryIds = _.get(searchValues, 'categoryIds', []);
-  if (categoryIds.length !== 0) {
-    accounts = _.filter(accounts, a => categoryIds.includes(a.categoryId+''));
-  }
+  const accounts = await api_accounts.getAccounts(searchQuery);
   dispatch(setList(accounts));
   dispatch(setLoadingGetAccounts(false));
-}
+};

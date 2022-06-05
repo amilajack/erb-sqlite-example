@@ -230,6 +230,8 @@
   "dependencies": {
     "@forrestjs/hooks": "^3.19.1",
     "antd": "^4.20.2",
+    "antd-img-crop": "^4.2.3",
+    "cheerio": "^1.0.0-rc.10",
     "child_process": "^1.0.2",
     "electron-debug": "^3.2.0",
     "electron-is-dev": "^2.0.0",

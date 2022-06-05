@@ -1,4 +1,5 @@
 const Sequelize = require('sequelize');
+const _ = require('lodash');
 
 const modelName = 'Account';
 const tableName = 'account_table';
@@ -38,13 +39,14 @@ const fields = {
     field: 'group_count',
     allowNull: false,
     default: 0,
-  }
+  },
 };
 
 // method: add single account
 const handleAddAccount = (conn, Model) => async (args) => {
   // add account query:
-  const q = 'INSERT INTO account_table(name, email, birthday, category_id, friend_count, group_count) VALUES (:name, :email, :birthday, :categoryId, :friendCount, :groupCount)';
+  const q =
+    'INSERT INTO account_table(name, email, birthday, category_id, friend_count, group_count) VALUES (:name, :email, :birthday, :categoryId, :friendCount, :groupCount)';
 
   const res = await conn.query(q, {
     replacements: {
@@ -53,7 +55,7 @@ const handleAddAccount = (conn, Model) => async (args) => {
       birthday: args.birthday,
       categoryId: args.categoryId,
       friendCount: args.friendCount,
-      groupCount: args.groupCount
+      groupCount: args.groupCount,
     },
   });
   return res[0];
@@ -95,7 +97,7 @@ const handleUpdateAccount = (conn, Model) => async (args) => {
       birthday: args.birthday,
       categoryId: args.categoryId,
       friendAccount: args.friendCount,
-      groupCount: args.groupCount
+      groupCount: args.groupCount,
     },
   });
 
@@ -117,13 +119,31 @@ const handleDeleteAccount = (conn, Model) => async (accountId) => {
 };
 
 // method: get all existing accounts
-const handleGetAccounts = (conn, Model) => async () => {
+const handleGetAccounts = (conn, Model) => async (searchQuery) => {
   // query:
-  const q = `SELECT account_id AS accountId, account_table.name, email, birthday, account_table.category_id AS categoryId, category_table.name AS category, friend_count AS friendCount, group_count AS groupCount
-    FROM account_table
-    INNER JOIN category_table
-    WHERE account_table.category_id = category_table.category_id`;
-  const res = await conn.query(q);
+  const q = [
+    `SELECT account_id AS accountId, account_table.name, email, birthday, account_table.category_id AS categoryId, category_table.name AS category, friend_count AS friendCount, group_count AS groupCount`,
+    `FROM account_table`,
+    `INNER JOIN category_table`,
+    `ON account_table.category_id = category_table.category_id WHERE 1 = 1`,
+  ];
+  let replacements = {};
+  if (!_.isEmpty(_.get(searchQuery, 'categories', []))) {
+    q.push(`AND categoryId in (:categories)`);
+    replacements = {
+      ...replacements,
+      ...{ categories: _.get(searchQuery, 'categories') },
+    };
+  }
+  if (!_.isEmpty(_.get(searchQuery, 'name', ''))) {
+    q.push(`AND account_table.name like :name`);
+    replacements = {
+      ...replacements,
+      ...{ name: `%${_.get(searchQuery, 'name')}%` },
+    };
+  }
+  const query = q.filter((i) => i !== null).join(' ');
+  const res = await conn.query(query, { replacements });
   return res[0];
 };
 

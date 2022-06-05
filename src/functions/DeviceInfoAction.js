@@ -1,5 +1,6 @@
 import { Buffer } from 'buffer';
-import RunCmdUtil from './RunCmdUtil';
+import DeviceUtil from 'utils/DeviceUtil';
+import RunCmdUtil from '../utils/RunCmdUtil';
 
 const DEVICE_ROMS = {};
 const DEVICE_VERSIONS = {};
@@ -224,7 +225,7 @@ const getDeviceProxy = async (serial) => {
       await RunCmdUtil.runShell(`"dumpsys wifi | grep HttpProxy"`, serial)
     ).stdout;
     const result = raw.match(/HttpProxy:\s\[(.*?)\]\s(.*?)\s/);
-    if (!result[1] || !result[2]) return '';
+    if (!result || !result[1] || !result[2]) return '';
     return `${result[1]}:${result[2]}`;
   } catch (e) {
     console.log('e', e);
@@ -232,10 +233,63 @@ const getDeviceProxy = async (serial) => {
   return '';
 };
 
-const DeviceInfoUtil = {
+const isA1 = (serial) => {
+  return DEVICE_MODELS[serial] === 'A1';
+};
+
+const isA1Pixel = (serial) => {
+  return DEVICE_MODELS[serial] === 'A1' && DEVICE_ROMS[serial] === 'PIXEL'
+};
+
+const isA2 = (serial) => {
+  return DEVICE_MODELS[serial] === 'A2';
+};
+
+const isA2Pixel = (serial) => {
+  return DEVICE_MODELS[serial] === 'A2' && DEVICE_ROMS[serial] === 'PIXEL';
+};
+
+const isA3 = (serial) => {
+  return DEVICE_MODELS[serial] === 'A3';
+};
+
+const is3A = (serial) => {
+  return DEVICE_MODELS[serial] === '3A';
+};
+
+const isXz1 = (serial) => {
+  return DEVICE_MODELS[serial] === 'XZ1';
+};
+
+const isS9 = (serial) => {
+  return DEVICE_MODELS[serial] === 'S9';
+};
+
+const isZ3 = (serial) => {
+  return DEVICE_MODELS[serial] === 'Z3';
+};
+
+const isXZ2 = (serial) => {
+  return DEVICE_MODELS[serial] === 'XZ2';
+};
+
+const DeviceInfoAction = {
+  DEVICE_VERSIONS,
+  SCREEN_SIZE_MAPPING,
+  DEVICE_ROMS,
   getSerials,
   getWinInfo,
   getDeviceProxy,
+  isA1,
+  isA1Pixel,
+  isA2,
+  isA2Pixel,
+  isA3,
+  is3A,
+  isXz1,
+  isS9,
+  isZ3,
+  isXZ2,
 };
 
-export default DeviceInfoUtil;
+export default DeviceInfoAction;

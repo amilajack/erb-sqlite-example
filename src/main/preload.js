@@ -65,12 +65,22 @@ contextBridge.exposeInMainWorld('api_categories', {
 });
 
 contextBridge.exposeInMainWorld('api_accounts', {
-  async getAccounts() {
-    const result = await ipcRenderer.invoke('get-accounts');
+  async getAccounts(searchQuery = {}) {
+    const result = await ipcRenderer.invoke('get-accounts', searchQuery);
     return result;
   },
   async addAccounts(accounts) {
     await ipcRenderer.invoke('add-accounts', accounts);
+  },
+});
+
+contextBridge.exposeInMainWorld('api_settings', {
+  async getSetting() {
+    const result = await ipcRenderer.invoke('get-setting');
+    return result;
+  },
+  async upsertSetting(setting) {
+    await ipcRenderer.invoke('upsert-setting', setting);
   },
 });
 
@@ -94,6 +104,9 @@ contextBridge.exposeInMainWorld('ipc_function', {
   statSync(filePath) {
     return fs.statSync(filePath);
   },
+  readFileSync(filePath) {
+    return fs.readFileSync(filePath);
+  },
   basename(filePath) {
     return basename(filePath);
   },
@@ -108,4 +121,3 @@ contextBridge.exposeInMainWorld('ipc_function', {
     await trash(path);
   },
 });
-

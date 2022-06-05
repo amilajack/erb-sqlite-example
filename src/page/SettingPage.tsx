@@ -4,7 +4,6 @@ import CategoryManager from 'component/CategoryManager';
 import FeedFacebookSetting from 'component/FeedFacebookSetting';
 
 const SettingPage = () => {
-
   return (
     <>
       <FeedFacebookSetting />

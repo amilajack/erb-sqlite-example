@@ -1,69 +1,39 @@
-import { Button, Col, Divider, Row, Select, Table, Upload } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
-import { useEffect, useState } from 'react';
+import _ from 'lodash';
+import {
+  Button,
+  Checkbox,
+  Col,
+  Divider,
+  Input,
+  InputNumber,
+  Modal,
+  Radio,
+  RadioChangeEvent,
+  Row,
+  Select,
+  Space,
+  Table,
+  Upload,
+} from 'antd';
+import {
+  UploadOutlined,
+  HistoryOutlined,
+  TeamOutlined,
+  CaretRightOutlined,
+} from '@ant-design/icons';
+import React, { useEffect, useMemo, useState } from 'react';
 import Papa from 'papaparse';
 import { useDispatch, useSelector } from 'react-redux';
-import _ from 'lodash';
 import {
   addAccounts,
   getAccounts,
   searchAccounts,
 } from 'features/feature-account/services/account.service';
 import { getCategories } from 'features/feature-category/services/category.service';
+import { CheckboxChangeEvent } from 'antd/lib/checkbox';
+import CommonFunc from 'common/common';
 
 const { Option } = Select;
-
-const accountColumns = [
-  {
-    title: 'Stt',
-    width: '5%',
-  },
-  {
-    title: 'Tên',
-    dataIndex: 'name',
-    width: '10%',
-  },
-  {
-    title: 'Email',
-    dataIndex: 'email',
-    width: '18%',
-  },
-  {
-    title: 'birthday',
-    dataIndex: 'birthday',
-    width: '10%',
-  },
-  {
-    title: 'Danh mục',
-    dataIndex: 'category',
-    width: '10%',
-  },
-  {
-    title: 'T/thái',
-    dataIndex: 'status',
-    width: '7%',
-  },
-  {
-    title: 'friendCount',
-    dataIndex: 'friendCount',
-    width: '10%',
-  },
-  {
-    title: 'groupCount',
-    dataIndex: 'groupCount',
-    width: '10%',
-  },
-  {
-    title: 'device',
-    dataIndex: 'device',
-    width: '10%',
-  },
-  {
-    title: 'completedAt',
-    dataIndex: 'completedAt',
-    width: '10%',
-  },
-];
 
 interface AccountType {
   key: React.Key;
@@ -79,35 +49,127 @@ interface AccountType {
   completedAt: string;
 }
 
-// const accountData: AccountType[] = [
-//   {
-//     key: '1',
-//     id: '100045708169083',
-//     name: 'Lien Phan Kim',
-//     email: 'kimlien1962@gmail.com',
-//     birthday: '20/10/1962',
-//     category: 'Shopping',
-//     status: 'Live',
-//     friendCount: 20,
-//     groupCount: 10,
-//     device: 'SGP521',
-//     completedAt: '26-04-2022 14:03',
-//   },
-// ];
+const LIST_ACCOUNT_INIT: AccountType[] = [];
 
-const accountRowSelection = {
-  onChange: (selectedRowKeys: React.Key[], selectedRows: AccountType[]) => {
-    console.log(
-      `selectedRowKeys: ${selectedRowKeys}`,
-      'selectedRows: ',
-      selectedRows
-    );
+const accountColumns = [
+  {
+    title: 'Stt',
+    width: '10%',
+    render: (text: string, account: AccountType, index: number) => (
+      <span>{index + 1}</span>
+    ),
   },
-  getCheckboxProps: (record: AccountType) => ({
-    // disabled: record.name === 'Disabled User', // Column configuration not to be checked
-    // name: record.name,
-  }),
-};
+  {
+    title: 'Local',
+    dataIndex: 'local',
+    width: '10%',
+  },
+  {
+    title: 'Uid',
+    dataIndex: 'uid',
+    width: '15%',
+  },
+  {
+    title: 'Name',
+    dataIndex: 'name',
+    width: '20%',
+  },
+  {
+    title: 'Username',
+    dataIndex: 'username',
+    width: '15%',
+  },
+  {
+    title: 'Password',
+    dataIndex: 'password',
+    width: '15%',
+  },
+  {
+    title: 'Email',
+    dataIndex: 'email',
+    width: '20%',
+  },
+  {
+    title: 'Pass mail',
+    dataIndex: 'passMail',
+    width: '15%',
+  },
+  {
+    title: 'Proxy',
+    dataIndex: 'proxy',
+    width: '10%',
+  },
+  {
+    title: 'birthday',
+    dataIndex: 'birthday',
+    width: '10%',
+  },
+  {
+    title: 'Friends',
+    dataIndex: 'friends',
+    width: '10%',
+  },
+  {
+    title: 'Groups',
+    dataIndex: 'groups',
+    width: '10%',
+  },
+  {
+    title: 'Token',
+    dataIndex: 'token',
+    width: '10%',
+  },
+  {
+    title: 'Cookie',
+    dataIndex: 'cookie',
+    width: '10%',
+  },
+  {
+    title: 'Auth',
+    dataIndex: 'auth',
+    width: '10%',
+  },
+  {
+    title: 'BU.IMG',
+    dataIndex: 'buImg',
+    width: '10%',
+  },
+  {
+    title: 'BU.CM',
+    dataIndex: 'buComment',
+    width: '10%',
+  },
+  {
+    title: 'VIA',
+    dataIndex: 'isVia',
+    width: '10%',
+  },
+  {
+    title: 'Login',
+    dataIndex: 'isLogin',
+    width: '10%',
+  },
+  {
+    title: 'Run',
+    dataIndex: 'isRun',
+    width: '10%',
+  },
+  {
+    title: 'Backup time',
+    dataIndex: 'backupTime',
+    width: '15%',
+  },
+  {
+    title: 'Inserted time',
+    dataIndex: 'insertedTime',
+    width: '15%',
+  },
+  {
+    title: 'Message',
+    dataIndex: 'message',
+    width: '30%',
+  },
+];
 
 const readAccountCsv = (pathFile: string) => {
   return new Promise((resolve, reject) => {
@@ -124,7 +186,13 @@ const readAccountCsv = (pathFile: string) => {
   });
 };
 
-const AccountManager = () => {
+interface AccountManagerContentProps {
+  setAccountSelected: (accounts: AccountType[]) => void;
+}
+
+const AccountManagerContent: React.FC<AccountManagerContentProps> = ({
+  setAccountSelected,
+}) => {
   const { listCategory } = useSelector((state) =>
     _.get(state, 'categories', [])
   );
@@ -140,6 +208,16 @@ const AccountManager = () => {
   const [fileList, setFileList] = useState([]);
   const [importing, setImporting] = useState(false);
   const [categoryImportSelected, setCategoryImportSelected] = useState('');
+  const [categoriesSearch, setCategoriesSearch] = useState([]);
+  const [nameSearch, setNameSearch] = useState('');
+  const [accountStatusSearch, setAccountStatusSearch] = useState('');
+
+  const searchAccountQuery = useMemo(() => {
+    return {
+      categories: categoriesSearch,
+      name: nameSearch,
+    };
+  }, [categoriesSearch, nameSearch]);
 
   const dispatch = useDispatch();
 
@@ -158,6 +236,16 @@ const AccountManager = () => {
   const handleImport = () => {
     setImporting(true);
     executeReadCsvFile(fileList[0]);
+  };
+
+  const accountRowSelection = {
+    onChange: (selectedRowKeys: React.Key[], selectedRows: AccountType[]) => {
+      setAccountSelected(selectedRows);
+    },
+    getCheckboxProps: (record: AccountType) => ({
+      // disabled: record.name === 'Disabled User', // Column configuration not to be checked
+      // name: record.name,
+    }),
   };
 
   const props = {
@@ -199,9 +287,6 @@ const AccountManager = () => {
 
   return (
     <>
-      <Divider orientation="left" orientationMargin={20}>
-        Thông tin Acccount
-      </Divider>
       <Row
         style={{
           paddingRight: '20px',
@@ -216,12 +301,31 @@ const AccountManager = () => {
             mode="tags"
             style={{ width: '30%' }}
             placeholder="Tất cả danh mục"
-            onChange={(values) =>
-              dispatch(searchAccounts({ categoryIds: values }))
-            }
+            onChange={(values) => {
+              setCategoriesSearch(values);
+              dispatch(
+                searchAccounts({
+                  ...searchAccountQuery,
+                  ...{ categories: values },
+                })
+              );
+            }}
           >
             {categories}
           </Select>
+          <Input.Search
+            allowClear
+            style={{ width: '30%', marginLeft: '15px' }}
+            placeholder="Nhập thông tin tài khoản muốn tìm"
+            onChange={(e) => {
+              setNameSearch(e.target.value);
+            }}
+            onSearch={(value) => {
+              dispatch(
+                searchAccounts({ ...searchAccountQuery, ...{ name: value } })
+              );
+            }}
+          />
         </Col>
         <Col span={12}>
           <Row
@@ -252,17 +356,256 @@ const AccountManager = () => {
           </Row>
         </Col>
       </Row>
-      <Table
-        rowSelection={{
-          type: 'checkbox',
-          ...{ rowSelection: accountRowSelection },
+      <Row
+        style={{
+          paddingRight: '20px',
+          paddingLeft: '20px',
+          paddingBottom: '20px',
+          display: 'flex',
+          justifyContent: 'start',
         }}
-        columns={accountColumns}
-        dataSource={listAccount}
-        pagination={false}
-        rowKey="accountId"
-      />
+      >
+        <Col>
+          <span className="label-setting" style={{ marginRight: '15px' }}>
+            Find:
+          </span>
+        </Col>
+        <Col>
+          <Radio.Group
+            defaultValue={accountStatusSearch}
+            onChange={(e: RadioChangeEvent) =>
+              setAccountStatusSearch(e.target.value)
+            }
+          >
+            <Space>
+              <Radio value="all">All</Radio>
+              <Radio value="worker">Worker</Radio>
+              <Radio value="not_login">Not login</Radio>
+              <Radio value="checkpoint">Checkpoint</Radio>
+              <Radio value="disable">Disable</Radio>
+            </Space>
+          </Radio.Group>
+        </Col>
+      </Row>
+      <div
+        style={{
+          minHeight: '200px',
+          maxHeight: '1000px',
+          overflow: 'auto',
+        }}
+      >
+        <Table
+          rowSelection={{
+            type: 'checkbox',
+            ...accountRowSelection,
+          }}
+          columns={accountColumns}
+          dataSource={listAccount}
+          pagination={false}
+          rowKey="accountId"
+          scroll={{ y: 700, x: '150vw' }}
+        />
+      </div>
     </>
+  );
+};
+
+type Props = {
+  isShow: boolean;
+  setModalPage: (page: string) => void;
+};
+
+const AccountManager: React.FC<Props> = ({ isShow, setModalPage }) => {
+  const [isShowSettingModal, setShowSettingModal] = useState(false);
+  const [accountSelected, setAccountSelected] = useState(LIST_ACCOUNT_INIT);
+  return (
+    <Modal
+      title="Account Manager"
+      visible={isShow}
+      width="100%"
+      destroyOnClose
+      onOk={() => {
+        setModalPage('');
+      }}
+      onCancel={() => {
+        setModalPage('');
+      }}
+      footer={[
+        <Button
+          key="auto_backup"
+          type="primary"
+          onClick={() => setShowSettingModal(true)}
+          icon={<HistoryOutlined />}
+        >
+          Auto Backup
+        </Button>,
+        <Button
+          onClick={() =>
+            CommonFunc.showModalConfirm(
+              'Infomation',
+              'Tính năng này sử dụng token & cookie để sao lưu, có thể dẫn đến checkpoint tài khoản. Bạn có muốn tiếp tục không?'
+            )
+          }
+          key="bu_group"
+          type="primary"
+          icon={<HistoryOutlined />}
+        >
+          BU Group
+        </Button>,
+        <Button
+          onClick={() =>
+            CommonFunc.showModalConfirm(
+              'Infomation',
+              'Tính năng này sử dụng token & cookie để sao lưu, có thể dẫn đến checkpoint tài khoản. Bạn có muốn tiếp tục không?'
+            )
+          }
+          key="bu_photos"
+          type="primary"
+          icon={<HistoryOutlined />}
+        >
+          BU Photos
+        </Button>,
+        <Button
+          onClick={() =>
+            CommonFunc.showModalConfirm(
+              'Infomation',
+              'Tính năng này sử dụng token & cookie để sao lưu, có thể dẫn đến checkpoint tài khoản. Bạn có muốn tiếp tục không?'
+            )
+          }
+          key="bu_friends"
+          type="primary"
+          icon={<HistoryOutlined />}
+        >
+          BU Friends
+        </Button>,
+        <Button
+          onClick={() =>
+            CommonFunc.showModalConfirm(
+              'Infomation',
+              'Tính năng này sử dụng token & cookie để sao lưu, có thể dẫn đến checkpoint tài khoản. Bạn có muốn tiếp tục không?'
+            )
+          }
+          key="get_full_info"
+          type="primary"
+          icon={<HistoryOutlined />}
+        >
+          Get full info
+        </Button>,
+        <Button
+          onClick={() => {
+            if (_.isEmpty(accountSelected)) {
+              CommonFunc.showModalInfo('Information', 'Please select account');
+            }
+          }}
+          key="check_live"
+          type="primary"
+          icon={<TeamOutlined />}
+        >
+          Check live
+        </Button>,
+      ]}
+    >
+      <AccountManagerContent setAccountSelected={setAccountSelected} />
+      <Modal
+        title="Backup accounts setting"
+        visible={isShowSettingModal}
+        width="50%"
+        centered
+        onOk={() => setShowSettingModal(false)}
+        onCancel={() => setShowSettingModal(false)}
+        footer={[
+          <Button
+            onClick={() => setShowSettingModal(false)}
+            key="cancel"
+            type="default"
+          >
+            Cancel
+          </Button>,
+          <Button
+            onClick={() => setShowSettingModal(false)}
+            key="start"
+            type="primary"
+            icon={<CaretRightOutlined />}
+          >
+            Start
+          </Button>,
+        ]}
+      >
+        <Row className="row-per-setting">
+          <Col span={2}>
+            <span className="label-setting">Actions</span>
+          </Col>
+          <Col>
+            <Checkbox
+              checked
+              onChange={(e: CheckboxChangeEvent) =>
+                // setInteractFollowFanPg(e.target.checked)
+                console.log('e.target.checked', e.target.checked)
+              }
+            >
+              Get full info
+            </Checkbox>
+          </Col>
+          <Col>
+            <Checkbox
+              checked
+              onChange={(e: CheckboxChangeEvent) =>
+                // setInteractRandomAct(e.target.checked)
+                console.log('e.target.checked', e.target.checked)
+              }
+            >
+              Backup groups
+            </Checkbox>
+          </Col>
+          <Col>
+            <Checkbox
+              checked
+              onChange={(e: CheckboxChangeEvent) =>
+                // setInteractRandomAct(e.target.checked)
+                console.log('e.target.checked', e.target.checked)
+              }
+            >
+              Backup friends
+            </Checkbox>
+          </Col>
+          <Col>
+            <Checkbox
+              checked
+              onChange={(e: CheckboxChangeEvent) =>
+                // setInteractRandomAct(e.target.checked)
+                console.log('e.target.checked', e.target.checked)
+              }
+            >
+              Backup photos
+            </Checkbox>
+          </Col>
+          <Col>
+            <Checkbox
+              checked
+              onChange={(e: CheckboxChangeEvent) =>
+                // setInteractRandomAct(e.target.checked)
+                console.log('e.target.checked', e.target.checked)
+              }
+            >
+              Backup photos
+            </Checkbox>
+          </Col>
+        </Row>
+        <Row className="row-per-setting">
+          <Col span={2}>
+            <span className="label-setting">Thread</span>
+          </Col>
+          <Col>
+            <InputNumber
+              min={1}
+              max={100000}
+              defaultValue={1}
+              onChange={(value) => console.log(value)}
+            />
+          </Col>
+        </Row>
+      </Modal>
+    </Modal>
   );
 };
 

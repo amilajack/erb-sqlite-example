@@ -3,21 +3,15 @@ import RunCmdUtil from 'utils/RunCmdUtil';
 import Util from 'utils/Util';
 import AppUtil from 'utils/AppUtil';
 import { TRUE } from 'node-sass';
-
-const isGoodRoot = async function (serial) {
-  const checkRootRes = await RunCmdUtil.runShell(
-    `"timeout 1 su -c 'echo root'"`,
-    serial
-  );
-  return JSON.stringify(checkRootRes).replace('echo root', '').includes('root');
-};
+import DeviceUtil from 'utils/DeviceUtil';
+import DeviceInfoAction from './DeviceInfoAction';
 
 const mountSystemMagisk = async (serial) => {
   RunCmdUtil.runSU(`mount -o rw,remount /`, serial);
   await Util.sleep(500);
   RunCmdUtil.runSU(`mount -o rw,remount /system`, serial);
   await Util.sleep(500);
-  return isGoodRoot(serial);
+  return DeviceUtil.isGoodRoot(serial);
 };
 
 const existSu = async (serial, path) => {
@@ -289,8 +283,149 @@ const backupAppMulti = async (serial, apps, email) => {
   return true;
 };
 
+const WifiIsOn = async (serial) => {
+  if (DeviceInfoAction.DEVICE_VERSIONS[serial] > 29) {
+    const connected = await DeviceUtil.isConnectedWifi(serial);
+    if (connected) return true;
+    let result = await RunCmdUtil.runShell(
+      '"timeout 2 curl -4 -s icanhazip.com"',
+      serial
+    );
+    if (result.stdout) return true;
+    result = await RunCmdUtil.runShell(
+      '"timeout 2 curl -6 -s icanhazip.com"',
+      serial
+    );
+    return !!result.stdout;
+  }
+  const res = await RunCmdUtil.runShell(
+    '"dumpsys wifi | grep mNetworkInfo"',
+    serial
+  );
+  return res.stdout.includes('CONNECTED/CONNECTED');
+};
+
+const openWifiSettings = async (serial) => {
+  return RunCmdUtil.runShell(`"am start -n 'com.android.settings/.Settings$WifiSettingsActivity'"`, serial)
+}
+
+const rebootRecovery = async (serial) => {
+  if (!serial) return;
+  await RunCmdUtil.runAdb(`-s ${serial} reboot recovery`);
+};
+
+const connectSager = async (serial, proxy) => {
+  if (!proxy) return false
+  let [ip, port] = proxy.split(':')
+  if (!ip || !port) return false
+
+  let p = 'io.nekohasekai.sagernet'
+  await AppUtil.forceStopApp(serial, p);
+  await AppUtil.openUserApp(serial, p);
+  await Util.sleep(1000);
+
+  // let useSagerSocks = localStorage.getItem('use-sager-socks') == 'true'; // TODO
+  // let proxyType = useSagerSocks ? '"SOCKS"' : '"HTTP"' // TODO
+  const proxyType = '"HTTP"';
+
+  let device = new Device(serial);
+
+  while(true) {
+    let ui = await device.dumpUi()
+
+    if (ui.includes('"OK"') && !ui.includes('android.widget.EditText')) {
+      await device.tapDynamic('"OK"')
+      continue
+    }
+
+    // home
+    if (ui.includes('io.nekohasekai.sagernet:id/fab')) {
+      if (ui.includes(ip) && ui.includes(port)) {
+        if (ui.includes('Connected')) {
+          return true
+        } else {
+          await device.tapDynamic(ip + ':' + port)
+          await Utils.sleep(1000)
+          await device.tapDynamic('io.nekohasekai.sagernet:id/fab')
+          await Utils.sleep(2000)
+          continue
+        }
+      } else if (ui.includes('io.nekohasekai.sagernet:id/profile_name')) {
+        let numProfile = ui.split('io.nekohasekai.sagernet:id/profile_name').length
+        if (numProfile > 4) {
+          await Utils.wipe(serial, p);
+          await Utils.forceStopApp(serial, p);
+          await Utils.openUserApp(serial, p);
+          await Utils.sleep(1000);
+          continue
+        }
+      }
+    }
+    if(ui.includes('"Manual Settings"')) {
+      if (ui.includes(proxyType)) {
+        await device.tapDynamic(proxyType)
+        continue
+      }
+      await device.tapDynamic('"Manual Settings"')
+      continue
+    }
+    if(ui.includes('"Add Profile"')) {
+      await device.tapDynamic('"Add Profile"')
+      continue
+    }
+
+    if (ui.includes('"Profile config"') && ui.includes(ip) && ui.includes(port)) {
+      device.tapDynamic('io.nekohasekai.sagernet:id/action_apply')
+      await Utils.sleep(2000);
+      await Utils.forceStopApp(serial, p);
+      await Utils.openUserApp(serial, p);
+      await Utils.sleep(1000);
+      continue
+    }
+
+    if (ui.includes('"Server"') && !ui.includes(ip)) {
+      if (ui.includes('android.widget.EditText')) {
+        await device.tapDynamic('android.widget.EditText')
+        await device.tapDynamic('android.widget.EditText')
+        await device.input(ip)
+        await Utils.sleep(1000);
+        await device.tapDynamic('android:id/button1')
+      } else {
+        await device.tapDynamic('"Server"')
+      }
+      continue
+    }
+    if (ui.includes('"Remote Port"') && !ui.includes(port)) {
+      if (ui.includes('android.widget.EditText')) {
+        await device.tapDynamic('android.widget.EditText')
+        await device.tapDynamic('android.widget.EditText')
+        await device.input(port)
+        await Utils.sleep(1000);
+        await device.tapDynamic('android:id/button1')
+      } else {
+        await device.tapDynamic('"Remote Port"')
+      }
+      continue
+    }
+
+    if (!ui.includes(p)) {
+      await Utils.sleep(1000);
+      ui = await device.dumpUi()
+      if (!ui.includes(p)) {
+        await Utils.forceStopApp(serial, p);
+        await Utils.openUserApp(serial, p);
+        await Utils.sleep(1000);
+        continue
+      }
+    }
+  }
+};
+
 const DeviceAction = {
   backupAppMulti,
+  WifiIsOn,
+  openWifiSettings,
+  rebootRecovery,
 };
 
 export default DeviceAction;
