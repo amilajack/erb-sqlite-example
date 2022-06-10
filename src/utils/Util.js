@@ -101,17 +101,89 @@ const randomNumber = (minimum, maximum) => {
   return Math.floor(Math.random() * (maximum - minimum + 1)) + minimum
 };
 
+const getContentFileLineByLine = (filePath) => {
+  try {
+    const content = ipc_function.readFileSync(filePath);
+    return content
+      .toString()
+      .split('\n')
+      .filter((x) => x);
+  } catch (e) {
+    return [];
+  }
+};
+
+const sleepArange = async (from, to) => {
+  let fromMs = from;
+  if (fromMs < 100) {
+    fromMs *= 1000;
+  }
+  let toMs = to;
+  if (toMs < 100) {
+    toMs *= 1000;
+  }
+  if (toMs) {
+    return sleep(randomNumber(fromMs, toMs));
+  }
+  return Utils.sleep(fromMs);
+};
+
+const matchRate = (rate) => {
+  return randomNumber(1, 100) < rate;
+};
+
+const getPointsFromListUi = (Dump, Keywork, filters = []) => {
+  let Regex;
+  let ArrayTextContent = [];
+  const PointsList = [];
+  try {
+    Regex = /<(.*?)>/g;
+    while (c = Regex.exec(Dump)) {
+      ArrayTextContent.push(c[1]);
+    }
+
+    ArrayTextContent = ArrayTextContent.filter(
+      (s) =>
+        s.includes(Keywork) &&
+        (filters.length === 0 || filters.every((f) => s.includes(f)))
+    );
+
+    Regex = /\[(.*?)\]/g;
+    ArrayTextContent.forEach((item) => {
+      const ArrayPoint = [];
+      while (c = Regex.exec(item)) {
+        ArrayPoint.push(Number(c[1].split(',')[0]));
+        ArrayPoint.push(Number(c[1].split(',')[1]));
+      }
+      PointsList.push({
+        ArrayPoint,
+        x: Math.floor((ArrayPoint[0] + ArrayPoint[2]) / 2),
+        y: Math.floor((ArrayPoint[1] + ArrayPoint[3]) / 2),
+        x2Subx1: ArrayPoint[2] - ArrayPoint[0],
+        y2Suby1: ArrayPoint[3] - ArrayPoint[1],
+      });
+    });
+  } catch (err) {
+    //
+  }
+  return PointsList;
+};
+
 const Util = {
   createDirPath,
   getRootBackupDir,
   getFileNameByPath,
   sleep,
+  sleepArange,
   trimChars,
   removeSpecialChars,
   getRootInputDir,
   getResourcePath,
   backupFiles,
   randomNumber,
+  getContentFileLineByLine,
+  matchRate,
+  getPointsFromListUi,
 };
 
 export default Util;

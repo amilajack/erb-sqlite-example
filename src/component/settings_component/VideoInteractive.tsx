@@ -26,8 +26,8 @@ const VideoInteractive: React.FC<Props> = ({
   videoInteractionSetting,
 }) => {
   const { tmpSetting } = useSelector((state) => _.get(state, 'settings', {}));
-  const [videoIdUrl, setVideoIdUrl] = useState(
-    _.get(videoInteractionSetting, 'videoIdUrl', '')
+  const [videoId, setVideoId] = useState(
+    _.get(videoInteractionSetting, 'videoId', '')
   );
   const [viewTimeFrom, setViewTimeFrom] = useState(
     _.get(videoInteractionSetting, 'viewTime.from', 5)
@@ -61,10 +61,10 @@ const VideoInteractive: React.FC<Props> = ({
     _.get(videoInteractionSetting, 'share.isShareGroup', false)
   );
   const [isShareNoApproval, setShareNoApproval] = useState(
-    _.get(videoInteractionSetting, 'share.isShareNoApproval', false)
+    _.get(videoInteractionSetting, 'share.isShareNoApproval', true)
   );
   const [shareMember, setShareMember] = useState(
-    _.get(videoInteractionSetting, 'share.shareMember', 1)
+    _.get(videoInteractionSetting, 'share.shareMember', 5000)
   );
   const [isShareNoMatchGroup, setShareNoMatchGroup] = useState(
     _.get(videoInteractionSetting, 'share.isShareNoMatchGroup', false)
@@ -79,9 +79,9 @@ const VideoInteractive: React.FC<Props> = ({
     _.get(videoInteractionSetting, 'share.numThread', 1)
   );
 
-  const livestreamInteraction = useMemo(() => {
+  const videoInteraction = useMemo(() => {
     return {
-      videoIdUrl,
+      videoId,
       viewTime: {
         from: viewTimeFrom,
         to: viewTimeTo,
@@ -139,7 +139,7 @@ const VideoInteractive: React.FC<Props> = ({
     postContentFile,
     shareMember,
     totalShare,
-    videoIdUrl,
+    videoId,
     viewTimeFrom,
     viewTimeTo,
   ]);
@@ -178,10 +178,10 @@ const VideoInteractive: React.FC<Props> = ({
   const valueRef = useRef();
   const dispatch = useDispatch();
   useEffect(() => {
-    valueRef.current = livestreamInteraction;
-    dispatch(saveTmpSetting('livestreamInteraction', livestreamInteraction));
+    valueRef.current = videoInteraction;
+    dispatch(saveTmpSetting('videoInteraction', videoInteraction));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [livestreamInteraction]);
+  }, [videoInteraction]);
 
   useEffect(() => {
     if (isSaveSetting) {
@@ -192,7 +192,7 @@ const VideoInteractive: React.FC<Props> = ({
 
   useEffect(() => {
     return () => {
-      dispatch(saveTmpSetting('livestreamInteraction', valueRef.current));
+      dispatch(saveTmpSetting('videoInteraction', valueRef.current));
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -205,16 +205,16 @@ const VideoInteractive: React.FC<Props> = ({
       }}
     >
       <Divider orientation="left" orientationMargin={5}>
-        Tương tác Livestream
+        Tương tác video
       </Divider>
       <Row>
         <Col span={3}>
-          <span className="label-setting">Video (id or url)</span>
+          <span className="label-setting">Video ID</span>
         </Col>
         <Col span={9}>
           <Input
-            defaultValue={videoIdUrl}
-            onChange={(e) => setVideoIdUrl(e.target.value)}
+            defaultValue={videoId}
+            onChange={(e) => setVideoId(e.target.value)}
           />
         </Col>
       </Row>
@@ -312,13 +312,14 @@ const VideoInteractive: React.FC<Props> = ({
               checked={isShareGroup}
               onChange={(e) => setShareGroup(e.target.checked)}
             >
-              Group
+              Groups
             </Checkbox>
           </Row>
           <Row className="row-per-setting">
             <Checkbox
               checked={isShareNoApproval}
               onChange={(e) => setShareNoApproval(e.target.checked)}
+              disabled
             >
               No approval
             </Checkbox>
@@ -333,16 +334,9 @@ const VideoInteractive: React.FC<Props> = ({
                 max={100000}
                 defaultValue={shareMember}
                 onChange={(value) => setShareMember(value)}
+                disabled
               />
             </Col>
-          </Row>
-          <Row className="row-per-setting">
-            <Checkbox
-              checked={isShareNoApproval}
-              onChange={(e) => setShareNoApproval(e.target.checked)}
-            >
-              No approval
-            </Checkbox>
           </Row>
           <Row className="row-per-setting">
             <Col>

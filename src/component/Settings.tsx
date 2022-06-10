@@ -168,7 +168,7 @@ const Settings: React.FC<Props> = ({ isSaveSetting, setting }) => {
       page = <PostInteractive isSaveSetting={isSaveSetting} postInteractionSetting={_.get(setting, 'postInteraction', {})} />;
       break;
     case 'video_interactive':
-      page = <VideoInteractive isSaveSetting={isSaveSetting} videoInteractionSetting={_.get(setting, 'postInteraction', {})} />;
+      page = <VideoInteractive isSaveSetting={isSaveSetting} videoInteractionSetting={_.get(setting, 'videoInteraction', {})} />;
       break;
     default:
       break;

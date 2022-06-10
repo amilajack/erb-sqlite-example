@@ -5,6 +5,8 @@ import { SettingOutlined, ReloadOutlined, CaretRightOutlined } from '@ant-design
 import DeviceInfoAction from 'functions/DeviceInfoAction';
 import SettingsManager from './SettingsManager';
 import ScriptInteractiveSettingForRun from './settings_component/settings_sub_component/ScriptInteractiveSettingForRun';
+import FeedFacebook from 'functions/FeedFacebook';
+import { useSelector } from 'react-redux';
 
 interface DeviceType {
   key: React.Key;
@@ -19,6 +21,18 @@ interface DeviceType {
 }
 
 const DeviceManager = () => {
+  const { setting } = useSelector((state) => _.get(state, 'settings', {}));
+
+  const settingObj = () => {
+    const settingObj = {};
+    if (setting.length > 0) {
+      setting.map((s) => {
+        Object.assign(settingObj, {[_.camelCase(s.key)]: JSON.parse(s.value)});
+      });
+    }
+    return settingObj;
+  }
+
   const deviceColumns = [
     {
       title: 'Device',
@@ -94,7 +108,10 @@ const DeviceManager = () => {
           {
             key: 'post_interactive',
             label: (
-              <a target="_blank" rel="noopener noreferrer" onClick={() => setSettingChosen('post_interactive')}>
+              <a target="_blank" rel="noopener noreferrer" onClick={() => {
+                FeedFacebook.feedFacebook('1c591614840d7ece', 'post_interactive', _.get(settingObj(), 'postInteractionV2'));
+                setSettingChosen('post_interactive');
+              }}>
                 Tương tác bài viết (like, share, comment...)
               </a>
             ),

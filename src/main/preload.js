@@ -105,7 +105,10 @@ contextBridge.exposeInMainWorld('ipc_function', {
     return fs.statSync(filePath);
   },
   readFileSync(filePath) {
-    return fs.readFileSync(filePath);
+    return fs.readFileSync(filePath, 'utf8');
+  },
+  unlinkSync(filePath) {
+    return fs.unlinkSync(filePath);
   },
   basename(filePath) {
     return basename(filePath);

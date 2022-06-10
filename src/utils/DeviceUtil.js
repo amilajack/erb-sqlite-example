@@ -8,6 +8,7 @@ import RunCmdUtil from './RunCmdUtil';
 import Util from './Util';
 
 const cheerio = require('cheerio');
+const Buffer = require('buffer').Buffer;
 
 let serialsListForStopAction = [];
 const useScrcpy = true;
@@ -196,9 +197,9 @@ class Device {
 
   // eslint-disable-next-line class-methods-use-this
   async getUiDump(serial, toLower = true) {
-    while (window.global.stopChangeModem) {
-      await Util.sleep(1);
-    }
+    // while (window.global.stopChangeModem) { // TODO
+    //   await Util.sleep(1);
+    // }
     if (toLower)
       return (
         await RunCmdUtil.runAdb(
@@ -371,6 +372,13 @@ class Device {
     );
   }
 
+  async swipeUpSlowAdb(x, y) {
+    RunCmdUtil.runShell(
+      `input touchscreen swipe ${x} ${y} ${x} ${Util.randomNumber(x + 10, y)}`,
+      this.serial
+    );
+  }
+
   async swipeUpAdb2(x, y) {
     RunCmdUtil.runShell(
       `input touchscreen swipe ${x} ${y} ${x} ${Util.randomNumber(80, 120)}`,
@@ -418,9 +426,12 @@ class Device {
   }
 
   async tap(x, y) {
-    const xAf += this.random(-10, 10);
-    const yAf += this.random(-10, 10);
-    if (useScrcpy) return this.winControl(this.serial, [{ a: 'tap', xAf, yAf }]);
+    let xAf = 0;
+    xAf += this.random(-10, 10);
+    let yAf = 0;
+    yAf += this.random(-10, 10);
+    if (useScrcpy)
+      return this.winControl(this.serial, [{ a: 'tap', xAf, yAf }]);
     return RunCmdUtil.runShell(`input tap ${xAf} ${yAf}`, this.serial);
   }
 
@@ -490,7 +501,6 @@ class Device {
     if (!x || !y || x <= 0 || y <= 0) return;
     const [x1, y1, x2, y2] = ArrayPoint;
     this.tapExact(
-      this.serial,
       Util.randomNumber(x1 + 10, x2 - 10),
       Util.randomNumber(y1 + 10, y2 - 10)
     );
@@ -501,7 +511,6 @@ class Device {
     if (!x || !y || x <= 0 || y <= 0) return;
     const [x1, y1, x2, y2] = ArrayPoint;
     this.tapExact(
-      this.serial,
       Util.randomNumber(x1 + 10, x2 - 10),
       Util.randomNumber(y1 + 10, y2 - 10)
     );
@@ -617,7 +626,7 @@ class Device {
 
   async screencap() {
     const filename = `./${this.serial}.png`;
-    if (ipc_function.existsSync(filename)) fs.unlinkSync(filename);
+    if (ipc_function.existsSync(filename)) ipc_function.unlinkSync(filename);
     await this.runExecOut(`screencap -p > ${filename}`);
     return filename;
   }
@@ -630,7 +639,7 @@ class Device {
     const imgFile = await this.screencap();
     if (!ipc_function.existsSync(imgFile)) return '';
     let hocrFile = `C:\\WINALL\\tesseract\\output\\${this.serial}`;
-    if (ipc_function.existsSync(hocrFile)) fs.unlinkSync(hocrFile);
+    if (ipc_function.existsSync(hocrFile)) ipc_function.unlinkSync(hocrFile);
     await RunCmdUtil.run(
       `C:\\WINALL\\tesseract\\tesseract.exe ${imgFile} ${hocrFile} -l eng hocr`
     );
@@ -724,13 +733,13 @@ class Device {
     }
   }
 
-  async openChrome(serial, link) {
-    if (!serial || !link) return;
+  async openChrome(link) {
+    if (!this.serial || !link) return;
     return RunCmdUtil.runShell(
       `am start -n com.android.chrome/com.google.android.apps.chrome.Main -a android.intent.action.VIEW -d '${link}'`,
-      serial
+      this.serial
     );
-  };
+  }
 
   async openChromeLess() {
     return this.openChrome(
@@ -759,7 +768,19 @@ class Device {
       'https://myaccount.google.com/birthday?gar=1'
     );
   }
+
+  async openLinkByApp(link) {
+    if (!this.serial || !link) return;
+    RunCmdUtil.runShell(
+      `am start -W -a android.intent.action.VIEW -d '${link}'`,
+      this.serial
+    );
+  }
 }
+
+const createDevice = (serial) => {
+  return new Device(serial);
+};
 
 const DeviceUtil = {
   ReleaseStopDevice,
@@ -770,6 +791,6 @@ const DeviceUtil = {
   unsetProxy,
   setWinSocksProfile,
   setProxy,
+  createDevice,
 };
-
 export default DeviceUtil;

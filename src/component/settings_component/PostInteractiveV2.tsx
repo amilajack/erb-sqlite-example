@@ -60,6 +60,9 @@ const PostInteractiveV2: React.FC<Props> = ({
   const [numShareGroup, setShareGroup] = useState(
     _.get(postInteractionSetting, 'action.numShareGroup', 1)
   );
+  const [rateAction, setRateAction] = useState(
+    _.get(postInteractionSetting, 'action.rateAction', 50)
+  );
   const [commentFile, setCommentFile] = useState(
     _.isEmpty(_.get(postInteractionSetting, 'comment.file'))
       ? []
@@ -95,6 +98,7 @@ const PostInteractiveV2: React.FC<Props> = ({
         isActionShareStory,
         isActionShareProfile,
         numShareGroup,
+        rateAction,
       },
       comment: {
         file:
@@ -121,6 +125,7 @@ const PostInteractiveV2: React.FC<Props> = ({
     isActionShareStory,
     isActionShareProfile,
     numShareGroup,
+    rateAction,
     commentFile,
     numThread,
   ]);
@@ -226,7 +231,7 @@ const PostInteractiveV2: React.FC<Props> = ({
             <Col>
               <InputNumber
                 min={1}
-                max={100000}
+                max={20}
                 defaultValue={numPost}
                 onChange={(value) => setNumPost(value)}
               />
@@ -301,10 +306,25 @@ const PostInteractiveV2: React.FC<Props> = ({
             </Col>
             <Col>
               <InputNumber
-                min={1}
-                max={100000}
+                min={0}
+                max={10}
                 defaultValue={numShareGroup}
                 onChange={(value) => setShareGroup(value)}
+              />
+            </Col>
+          </Row>
+          <Row className="row-per-setting">
+            <Col style={{ padding: '3px 3px 0 0' }}>
+              <span>Rate action</span>
+            </Col>
+            <Col span={12}>
+              <InputNumber
+                min={0}
+                max={100}
+                defaultValue={rateAction}
+                formatter={(value) => `${value}%`}
+                parser={(value: string) => value.replace('%', '')}
+                onChange={(value) => setRateAction(value)}
               />
             </Col>
           </Row>
