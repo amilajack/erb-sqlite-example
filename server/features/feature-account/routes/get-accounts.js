@@ -1,0 +1,14 @@
+const sqlite = require('../../../services/sqlite');
+
+// NOTE: IMPORTANT! always name the route method with method.
+// Because it is used inside init function.
+
+const method = async (searchQuery) => {
+  const AccountModel = sqlite.getModel('Account');
+  const result = await AccountModel.handleGetAccounts(searchQuery);
+  return result;
+};
+
+module.exports = {
+  method,
+};
